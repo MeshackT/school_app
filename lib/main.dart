@@ -1,29 +1,48 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:school_app/Authentication/LoginRegistrationClass.dart';
+import 'package:school_app/CreateAFeed.dart';
 import 'package:school_app/Feeds.dart';
-import 'package:school_app/LogInPage.dart';
+import 'package:school_app/LoginPage.dart';
+import 'package:school_app/More.dart';
+import 'package:school_app/Profile.dart';
 import 'package:school_app/Reports.dart';
-import 'package:school_app/Settings.dart';
+import 'package:school_app/ResetPassword.dart';
 import 'package:school_app/SignUpPage.dart';
-import 'package:school_app/StartUpPage.dart';
-
-import 'SelectorPage.dart';
+import 'CreateAReport.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 final Map<String, WidgetBuilder> routes = {
-  LoginPage.routeName:(context) => const LogIn(),
+  LoginPage.routeName:(context) => const LoginPage(),
   SignupPage.routeName: (context) => const SignupPage(),
-  LogIn.routeName: (context) => const LogIn(),
-  Settings.routeName: (context) => const Settings(),
+  More.routeName: (context) => const More(),
   Feeds.routeName: (context) => const Feeds(),
   Reports.routeName: (context) => const Reports(),
-  MyApp.routeName: (context) => const MyApp(),
+  CreateAFeed.routeName: (context) => const CreateAFeed(),
+  CreateAReport.routeName: (context) => const CreateAReport(),
+  MyProfile.routeName: (context) => const MyProfile(),
+  ResetPassword.routeName: (context) => const ResetPassword()
 
 
 };
-void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
+Future main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
-  static const routeName = '/MainPage';
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  LoginRegistrationClass loginRegistrationClass = LoginRegistrationClass();
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +50,10 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'School App',
-      home: SelectorPage(),
-
+      home: LoginPage(),
     );
+
   }
+
 }
+
