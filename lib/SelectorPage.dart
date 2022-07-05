@@ -45,9 +45,6 @@ class _SelectorPageState extends State<SelectorPage> {
         elevation: 2,
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-              onPressed: (){},
-              icon: const Icon(Icons.search)),
           Theme(
             data: Theme.of(context).copyWith(
               textTheme: const TextTheme().apply(bodyColor: Colors.white),
@@ -62,6 +59,7 @@ class _SelectorPageState extends State<SelectorPage> {
                   value: 0,
                   child: Row(
                     children: const [
+                      PopupMenuDivider(),
                       SizedBox(
                         width: 7,
                       ),
@@ -105,21 +103,7 @@ class _SelectorPageState extends State<SelectorPage> {
                   ),
                 ),
                 const PopupMenuDivider(),
-                PopupMenuItem<int>(
-                  value: 3,
-                  child: Row(
-                    children: const [
-                      SizedBox(
-                        width: 7,
-                      ),
-                      Text(
-                        "Log Out",
-                        style: TextStyle(color: Colors.white),
 
-                      ),
-                    ],
-                  ),
-                ),
               ],
               onSelected: (item) => selectedItem( item),
             ),
@@ -128,7 +112,7 @@ class _SelectorPageState extends State<SelectorPage> {
 
       ),
 
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.red.shade50,
       body: Stack(
         children: [
           _tabs[_currentIndex],
@@ -191,25 +175,6 @@ class _SelectorPageState extends State<SelectorPage> {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const MyProfile()));
 
-        break;
-      case 3:
-        _scaffoldKey.currentState!.showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.redAccent,
-            duration:  const Duration(seconds: 4), content:
-          Row(
-            children: const <Widget>[
-              CircularProgressIndicator(),
-              Text("  Signing in...")
-            ],
-          ),
-          ),
-        );
-        loginRegistrationClass.logout()
-            .whenComplete(() =>
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const LoginPage()))
-        );
         break;
     }
   }

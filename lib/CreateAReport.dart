@@ -27,6 +27,7 @@ class _CreateAReportState extends State<CreateAReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: loginRegistrationClass.scaffoldKey,
       appBar: AppBar(
         elevation: 0.2,
         backgroundColor: Colors.redAccent,
@@ -46,7 +47,7 @@ class _CreateAReportState extends State<CreateAReport> {
 
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.red.shade50,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -218,15 +219,6 @@ class _CreateAReportState extends State<CreateAReport> {
                                 loginRegistrationClass.imagePicker.text = value!;
                               });
                             },
-                            /*validator: (value) {
-                              if (value!.isEmpty) {
-                                return ("Enter you phone Number");
-                              }
-                              if (value.length < 10) {
-                                return ("Enter a valid phone number with 10 digits");
-                              }
-                              return null;
-                            },*/
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                                 fontSize: 14.0, color: Colors.grey),
@@ -266,9 +258,22 @@ class _CreateAReportState extends State<CreateAReport> {
                             //Send this information to the database
                             if (loginRegistrationClass.formKey.currentState!.validate()) {
                               FocusScope.of(context).unfocus();
-                              //get the user information
+                              //get the use
+                              // r information
+                              loginRegistrationClass.scaffoldKey.currentState!.showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  duration:  const Duration(seconds: 4), content:
+                                Row(
+                                  children: const <Widget>[
+                                    CircularProgressIndicator(),
+                                    Text("  Creating a report...")
+                                  ],
+                                ),
+                                ),
+                              );
                               loginRegistrationClass.addReportRequest(context);
-                              //loginRegistrationClass.log.i(loginRegistrationClass.currentTime);
+
                             }
                           },
                           child: const Text(

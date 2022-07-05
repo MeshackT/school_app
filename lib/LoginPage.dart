@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
+import 'package:school_app/Authentication/LoginRegistrationClass.dart';
 import 'package:school_app/ResetPassword.dart';
 import 'package:school_app/SelectorPage.dart';
 
@@ -26,11 +27,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  final GlobalKey<ScaffoldState> _scaffoldKey =  GlobalKey<ScaffoldState>();
+  LoginRegistrationClass loginRegistrationClass =LoginRegistrationClass();
 
   bool validationAndSave() {
-    final form = _formKey.currentState;
+    final form = loginRegistrationClass.formKey.currentState;
     if (form!.validate()) {
       form.save();
       return false;
@@ -43,12 +43,17 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
+    // changes //
+    /*
+    * Added FutureBuild <DocumentSnapshot> to check for connectionState
+    * */
     return Scaffold(
-      key: _scaffoldKey,
+      key: loginRegistrationClass.scaffoldKey,
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.red.shade50,
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -79,122 +84,124 @@ class _LoginPageState extends State<LoginPage> {
                           horizontal: 40
                       ),
                       child: Form(
-                        key: _formKey,
+                        key: loginRegistrationClass.formKey,
                         child: Column(
                           children: [
-                          Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("Code Unit",
-                              style:  TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87
-                              ),
-                            ),
-                            const SizedBox(height: 5,),
-                            TextFormField(
-                              controller: codeUnit,
-                              obscureText: true,
-                              onSaved: (value){
-                                setState(() {
-                                  codeUnit.text = value!;
-                                });
-                              },
-                              validator: (value) {
-                                if (value!.trim().isEmpty) {
-                                  return ("Enter a Code");
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey.shade400,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+
+                                loginRegistrationClass.space(),
+                                const Text("Code Unit",
+                                  style:  TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black87
                                   ),
                                 ),
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey.shade400)
-                                ),
-                              ),
-                            ),
-                            const Text("Email",
-                              style:  TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87
-                              ),
-                            ),
-                            const SizedBox(height: 5,),
-                            TextFormField(
-                              controller: email,
-                              obscureText: false,
-                              onSaved: (value){
-                                setState(() {
-                                  email.text = value!;
-                                });
-                              },
-                              validator: (value) {
-                                if (value!.trim().isEmpty) {
-                                  return ("Enter a valid email");
-                                }
-                                if (!value.contains('@')) {
-                                  return ("Please Enter a valid valid email");
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey.shade400,
+                                const SizedBox(height: 5,),
+                                TextFormField(
+                                  controller: codeUnit,
+                                  obscureText: true,
+                                  onSaved: (value){
+                                    setState(() {
+                                      codeUnit.text = value!;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value!.trim().isEmpty) {
+                                      return ("Enter your code");
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.grey.shade400)
+                                    ),
                                   ),
                                 ),
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey.shade400)
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 30,),
-                            const Text("Password",
-                              style:  TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black87
-                              ),
-                            ),
-                            const SizedBox(height: 5,),
-                            TextFormField(
-                              controller: password,
-                              obscureText: true,
-                              onSaved: (value){
-                                setState(() {
-                                  password.text = value!;
-                                });
-                              },
-                              validator: (value) {
-                                if (value!.trim().isEmpty) {
-                                  return ("Enter a password");
-                                }
-                                if (value.length < 5) {
-                                  return ("Please Enter a valid password");
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey.shade400,
+                                const Text("Email",
+                                  style:  TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black87
                                   ),
                                 ),
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey.shade400)
+                                const SizedBox(height: 5,),
+                                TextFormField(
+                                  controller: email,
+                                  obscureText: false,
+                                  onSaved: (value){
+                                    setState(() {
+                                      email.text = value!;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value!.trim().isEmpty) {
+                                      return ("Enter a valid email");
+                                    }
+                                    if (!value.contains('@')) {
+                                      return ("Please Enter a valid valid email");
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.grey.shade400)
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ],)
+                                const SizedBox(height: 30,),
+                                const Text("Password",
+                                  style:  TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black87
+                                  ),
+                                ),
+                                const SizedBox(height: 5,),
+                                TextFormField(
+                                  controller: password,
+                                  obscureText: true,
+                                  onSaved: (value){
+                                    setState(() {
+                                      password.text = value!;
+                                    });
+                                  },
+                                  validator: (value) {
+                                    if (value!.trim().isEmpty) {
+                                      return ("Enter a password");
+                                    }
+                                    if (value.length < 5) {
+                                      return ("Please Enter a valid password");
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.grey.shade400)
+                                    ),
+                                  ),
+                                ),
+                              ],)
                           ],
                         ),
                       ),
@@ -225,27 +232,27 @@ class _LoginPageState extends State<LoginPage> {
                       child: Container(
                         padding: const EdgeInsets.only(top: 3,left: 3),
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(40),
+                          borderRadius: BorderRadius.circular(40),
                         ),
                         child: MaterialButton(
                           minWidth: double.infinity,
                           height:60,
                           onPressed: (){
-                            if (_formKey.currentState!.validate()) {
+                            if (loginRegistrationClass.formKey.currentState!.validate()) {
                               FocusScope.of(context).unfocus();
                               //get the use
                               // r information
-                              _scaffoldKey.currentState!.showSnackBar(
-                                  SnackBar(
-                                    backgroundColor: Colors.redAccent,
-                                    duration:  const Duration(seconds: 4), content:
-                                  Row(
-                                    children: const <Widget>[
-                                      CircularProgressIndicator(),
-                                      Text("  Signing in...")
-                                    ],
-                                  ),
-                                  ),
+                              loginRegistrationClass.scaffoldKey.currentState!.showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.redAccent,
+                                  duration:  const Duration(seconds: 4), content:
+                                Row(
+                                  children: const <Widget>[
+                                    CircularProgressIndicator(),
+                                    Text("  Signing in...")
+                                  ],
+                                ),
+                                ),
                               );
                               _userSignIn(email.text, password.text)
                                   .whenComplete(() =>
@@ -255,18 +262,18 @@ class _LoginPageState extends State<LoginPage> {
                                           builder: (context) => const SelectorPage()),
                                           (route) => false),
                               );
-                              }
-                            },
+                            }
+                          },
                           color: Colors.redAccent,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(60)
                           ),
                           child: const Text("Login",
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 16,
                                 color: Colors.white
-                          ),),
+                            ),),
 
                         ),
                       ),
@@ -278,15 +285,15 @@ class _LoginPageState extends State<LoginPage> {
                         const Text("Don't have an account?"),
                         TextButton(
                             onPressed: (){
-                            Navigator.push<void>(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) => const SignupPage(),
-                              ),
-                            );
-                          },
+                              Navigator.push<void>(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (BuildContext context) => const SignupPage(),
+                                ),
+                              );
+                            },
                             child: const Text("SignUp",
-                            style: TextStyle(color: Colors.redAccent),)
+                              style: TextStyle(color: Colors.redAccent),)
                         ),
                       ],
                     ),
@@ -301,6 +308,8 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+
+
   }
   Future<User?> _userSignIn(String email, String password) async {
     final _auth = FirebaseAuth.instance;
@@ -315,11 +324,6 @@ class _LoginPageState extends State<LoginPage> {
           .then((uid) => {
         log.i(user!.uid + " logged in"),
         Fluttertoast.showToast(msg: "Login Success"),
-        /*Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const SelectorPage()),
-                (route) => false),*/
       });
     } on FirebaseAuthException catch (e) {
       //if user is not found then display this msg

@@ -3,6 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:school_app/Authentication/LoginRegistrationClass.dart';
 import 'package:school_app/Authentication/ReusableWidgets.dart';
+import 'package:school_app/EditReport.dart';
+
+import 'SelectorPage.dart';
 
 class Reports extends StatefulWidget {
   const Reports({Key? key}) : super(key: key);
@@ -17,9 +20,8 @@ class _ReportsState extends State<Reports> {
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
-        .collection('createdReport').orderBy('time', descending: true).snapshots();
+        .collection('createdReport').orderBy('date', descending: true).snapshots();
     ReusableWidgets reusableWidgets = ReusableWidgets();
-
     return StreamBuilder<QuerySnapshot>(
       stream: _usersStream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -55,7 +57,6 @@ class _ReportsState extends State<Reports> {
             ),
           );
         }
-
         return ListView.builder(
           itemCount: snapshot.data!.size,
           itemBuilder: (BuildContext context, int index){
@@ -70,7 +71,7 @@ class _ReportsState extends State<Reports> {
               movementDuration: const Duration(milliseconds: 200),
               resizeDuration: const Duration(milliseconds: 1000),
               secondaryBackground: Container(
-                color: Colors.grey[400],
+                color: Colors.red.shade100,
                 alignment: AlignmentDirectional.centerEnd,
                 child: const Padding(
                   padding: EdgeInsets.all(14.0),
@@ -108,22 +109,22 @@ class _ReportsState extends State<Reports> {
                     padding: const EdgeInsets.only(
                         top: 6.0, left: 6.0, right: 6.0, bottom: 6.0),
                     child: ExpansionTile(
-                      trailing: Column(
-                        children: [
-                          Text(data['sendersName'],
-                              style: loginRegistrationClass.textStyle()),
-                          loginRegistrationClass.space(),
-                          loginRegistrationClass.space(),
-
-                          Text(
-                            data['time'],
-                          )
-                        ],
+                      trailing: Text(
+                        data['time'],
                       ),
                       //leading: Text(data['sendersName'], style: reusableWidgets.textStyleDarkest()),
                       title: Text("About: "+ data['reportName'],
                         style: loginRegistrationClass.textStyle2(),),
-                      subtitle: Text("Note: "+ data['reportDetails']),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                         const SizedBox(
+                            child: Text("Image here"),
+                          ),
+                          loginRegistrationClass.space(),
+                          Text("Note: "+ data['reportDetails'])
+                        ],
+                      ),
                       expandedCrossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
@@ -141,17 +142,21 @@ class _ReportsState extends State<Reports> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Text("By "+ data['sendersName'], style: reusableWidgets.textStyleLightDark()),
                                     Text("Date: "+ loginRegistrationClass
                                         .formattedDate(data['date']), style: reusableWidgets.textStyleLightDark()
                                     ),
                                     Text("Phone Number: "+ data['phoneNumber'], style: reusableWidgets.textStyleLightDark()),
-                                    Text("Image here: ", style: reusableWidgets.textStyleLightDark()),
-
                                   ],
                                 ),
                               ),
                               IconButton(
-                                onPressed: (){},
+                                onPressed: (){
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (context) => const EditReport(),
+                                    ),
+                                  );
+                                },
                                 icon: Icon(Icons.edit, color: loginRegistrationClass.iconColor(),),)
                             ]
                         )

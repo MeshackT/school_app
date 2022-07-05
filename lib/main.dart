@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:school_app/Authentication/EditFeeds.dart';
 import 'package:school_app/Authentication/LoginRegistrationClass.dart';
 import 'package:school_app/CreateAFeed.dart';
 import 'package:school_app/Feeds.dart';
@@ -11,6 +12,8 @@ import 'package:school_app/ResetPassword.dart';
 import 'package:school_app/SignUpPage.dart';
 import 'CreateAReport.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'EditReport.dart';
+import 'SelectorPage.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginPage.routeName:(context) => const LoginPage(),
@@ -21,39 +24,56 @@ final Map<String, WidgetBuilder> routes = {
   CreateAFeed.routeName: (context) => const CreateAFeed(),
   CreateAReport.routeName: (context) => const CreateAReport(),
   MyProfile.routeName: (context) => const MyProfile(),
-  ResetPassword.routeName: (context) => const ResetPassword()
-
+  ResetPassword.routeName: (context) => const ResetPassword(),
+  EditFeeds.routeName: (context) => const EditFeeds(),
+  EditReport.routeName: (context) => const EditReport()
 
 };
 
 Future main() async{
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+   const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  LoginRegistrationClass loginRegistrationClass = LoginRegistrationClass();
   User? user = FirebaseAuth.instance.currentUser;
+  final LoginRegistrationClass loginRegistrationClass = LoginRegistrationClass();
+
 
   @override
   Widget build(BuildContext context) {
+    // Changes made=>>> I added the state connection checker which is still under review
+    return FutureBuilder(
+        builder: (ctx, snapshot) {
+          // Checking if future is resolved
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If we got an error
+            User? user = snapshot.data as User?;
+            if (user != null) {
+              loginRegistrationClass.log.i(user.uid);
+              return const SelectorPage();
 
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'School App',
-      home: LoginPage(),
-    );
-
+              // if we got our data
+            }
+            loginRegistrationClass.log.i("No user");
+            return const Text(
+              ""
+            );
+          }
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'School App',
+            home: LoginPage(),
+          );
+        });
   }
-
 }
-

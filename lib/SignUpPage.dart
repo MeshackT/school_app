@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +42,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController grade = TextEditingController();
   final TextEditingController name = TextEditingController();
 
+  String learnerCode = "Learner05";
   bool validationAndSave() {
     final form = loginRegistrationClass.formKey.currentState;
     if (form!.validate()) {
@@ -55,10 +55,11 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: loginRegistrationClass.scaffoldKey,
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.red.shade50,
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -147,14 +148,14 @@ class _SignupPageState extends State<SignupPage> {
                                       controller: email,
                                       onSaved: (value){
                                         setState(() {
-                                          email.text = value!;
+                                          email.text = value!.trim().toLowerCase();
                                         });
                                       },
                                       validator: (value) {
                                         if (value!.trim().isEmpty) {
                                           return ("Enter a valid email");
                                         }
-                                        if (!value.contains('@')) {
+                                        if (!value.trim().toLowerCase().contains('@')) {
                                           return ("Please Enter a valid valid email");
                                         }
                                         return null;
@@ -241,7 +242,7 @@ class _SignupPageState extends State<SignupPage> {
                                     const SizedBox(height: 5,),
                                     const Text("Name"),
                                     TextFormField(
-                                      obscureText: true,
+                                      obscureText: false,
                                       controller: name,
 
                                       onSaved: (value){
@@ -270,7 +271,7 @@ class _SignupPageState extends State<SignupPage> {
                                     const SizedBox(height: 5,),
                                     const Text("Teaching Subject"),
                                     TextFormField(
-                                      obscureText: true,
+                                      obscureText: false,
                                       controller: subjectTeaching,
 
                                       onSaved: (value){
@@ -294,7 +295,7 @@ class _SignupPageState extends State<SignupPage> {
                                     const SizedBox(height: 5,),
                                     const Text("Grade"),
                                     TextFormField(
-                                      obscureText: true,
+                                      obscureText: false,
                                       controller: grade,
 
                                       onSaved: (value){
@@ -347,7 +348,7 @@ class _SignupPageState extends State<SignupPage> {
                                     ),
                                   );
                                   registerUsers(email.text, password.text)
-                                .whenComplete(() =>
+                                      .whenComplete(() =>
                                       Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
@@ -406,12 +407,16 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
+
+
+
+
   }
 
   Future<void> registerUsers(String email, String password) async {
     if (loginRegistrationClass.formKey.currentState!.validate()) {
       await _auth
-          .createUserWithEmailAndPassword(email: email, password: password)
+          .createUserWithEmailAndPassword(email: email.trim().toLowerCase(), password: password.trim())
           .then((value) => {
         postDetailsToFirebase(),
       })
@@ -428,11 +433,11 @@ class _SignupPageState extends State<SignupPage> {
     //writing to firebase
     //adding the details to the constructor
     userModel.uid = user?.uid;
-    userModel.email = email.text;
-    userModel.password = password.text;
-    userModel.name = name.text;
-    userModel.grade = grade.text;
-    userModel.subjectTeaching = subjectTeaching.text;
+    userModel.email = email.text.trim().toLowerCase();
+    userModel.password = password.text.trim();
+    userModel.name = name.text.trim();
+    userModel.grade = grade.text.trim();
+    userModel.subjectTeaching = subjectTeaching.text.trim();
 
     await firebaseFirestore
         .collection("users")

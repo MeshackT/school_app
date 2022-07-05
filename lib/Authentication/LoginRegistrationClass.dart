@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:school_app/Authentication/ReusableWidgets.dart';
 import 'package:school_app/SelectorPage.dart';
+
+import '../LoginPage.dart';
 
 class LoginRegistrationClass {
 
@@ -15,7 +18,9 @@ class LoginRegistrationClass {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final GlobalKey<FormState> formKey = GlobalKey();
   final GlobalKey<ScaffoldState> scaffoldKey =  GlobalKey<ScaffoldState>();
+ReusableWidgets reusableWidgets = ReusableWidgets();
 
+  TextEditingController searchController = TextEditingController();
   //senders name 1
   final TextEditingController sendersName = TextEditingController();
   //Topic name 2
@@ -26,10 +31,14 @@ class LoginRegistrationClass {
   final TextEditingController phoneNumber = TextEditingController();
   //Topic name 2
   final TextEditingController reportName = TextEditingController();
+  //FeedCode
+  final TextEditingController feedCode = TextEditingController();
+
   //Details of topic 3
   final TextEditingController reportDetails = TextEditingController();
   final TextEditingController grade = TextEditingController();
   final TextEditingController subjectType = TextEditingController();
+
   final TextEditingController imagePicker = TextEditingController();
 
 
@@ -49,9 +58,12 @@ class LoginRegistrationClass {
     return formattedTime;
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signOut()
+          .then((value) =>
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const LoginPage(),),),);
     } on FirebaseAuthException catch (e) {
 
         log.i(e.code);
@@ -97,7 +109,7 @@ class LoginRegistrationClass {
       'uid': user!.uid,
       'date': dateTime,
       'time': formattedTime,
-      'imagePicker': imagePicker,
+      'imagePicker': imagePicker.text.trim(),
       'sendersName': sendersName.text.trim(),
       'reportName': reportName.text.trim(),
       'reportDetails': reportDetails.text.trim(),
@@ -105,14 +117,18 @@ class LoginRegistrationClass {
       'owner': user.uid,
     })
         .then(
-            (value) => Fluttertoast.showToast(msg: "Successfully created")
-      .then((value) => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const SelectorPage(),),),)
-    )
-        .catchError(
-          (error) =>
-          Fluttertoast.showToast(msg: "failed to create a report $error"),
+          (value) =>
 
+          Fluttertoast.showToast(msg: "Successfully created")
+              .whenComplete(() => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const SelectorPage(),
+            ),
+          )
+              .catchError(
+                (error) =>
+                Fluttertoast.showToast(msg: "failed to send details $error"),
+          ),
+          ),
     );
   }
 
@@ -137,24 +153,29 @@ class LoginRegistrationClass {
     log.i(user);
     return createAFeed
         .add({
-      'uid': user!.uid,
-      'date': dateTime,
-      'time': formattedTime,
-      'feedName': feedName.text.trim(),
-      'feedNews': feedNews.text.trim(),
-      'grade': grade.text.trim(),
-      'sendersName': sendersName.text.trim(),
-      'owner': user.uid,
-      'subjectType': subjectType.text.trim(),
-    })
+          'uid': user!.uid,
+          'date': dateTime,
+          'time': formattedTime,
+          'owner': user.uid,
+          'feedName': feedName.text.trim(),
+          'feedNews': feedNews.text.trim(),
+          'grade': grade.text.trim(),
+          'sendersName': sendersName.text.trim(),
+          'subjectType': subjectType.text.trim(),
+        })
         .then(
-            (value) => Fluttertoast.showToast(msg: "Successfully created!")
-      .then((value) => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const SelectorPage())))
+          (value) =>
+
+              Fluttertoast.showToast(msg: "Successfully created")
+          .whenComplete(() => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const SelectorPage(),
+            ),
     )
         .catchError(
           (error) =>
-          Fluttertoast.showToast(msg: "failed to create a feed $error"),
+          Fluttertoast.showToast(msg: "failed to send details $error"),
+             ),
+          ),
     );
   }
 

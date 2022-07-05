@@ -43,6 +43,7 @@ class _ResetPasswordState extends State<ResetPassword> {
         backgroundColor: Colors.redAccent,
         title: const Text('Reset Password'),
       ),
+      backgroundColor: Colors.red.shade50,
       body: SafeArea(
         child: Center(
           child: Form(

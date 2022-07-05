@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:school_app/Authentication/EditFeeds.dart';
 import 'package:school_app/Authentication/LoginRegistrationClass.dart';
 import 'package:school_app/Authentication/ReusableWidgets.dart';
 
@@ -17,11 +18,12 @@ class _FeedsState extends State<Feeds> {
 
   ReusableWidgets reusableWidgets= ReusableWidgets();
   LoginRegistrationClass loginRegistrationClass = LoginRegistrationClass();
+  String searchName = "";
 
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
-        .collection('createdFeeds').orderBy('time', descending: true).snapshots();
+        .collection('createdFeeds').orderBy('date', descending: true).snapshots();
 
     return StreamBuilder<QuerySnapshot>(
       stream: _usersStream,
@@ -46,14 +48,16 @@ class _FeedsState extends State<Feeds> {
               children: const [
                 /*CircularProgressIndicator(color: Colors.redAccent),
                 SizedBox(height: 10.0,),
-*/                Padding(
+*/               Padding(
                     padding: EdgeInsets.only(top: 2.0),
                     child:   LinearProgressIndicator(
 
                     valueColor: AlwaysStoppedAnimation(Colors.green),
 
-              ),
-)
+                  ),
+
+                ),
+
               ],
             ),
           );
@@ -63,6 +67,7 @@ class _FeedsState extends State<Feeds> {
           itemCount: snapshot.data!.size,
           itemBuilder: (BuildContext context, int index){
             DocumentSnapshot data = snapshot.data!.docs[index];
+
             return Dismissible(background: Container(
               color: Colors.white,
             ),
@@ -73,7 +78,7 @@ class _FeedsState extends State<Feeds> {
               movementDuration: const Duration(milliseconds: 200),
               resizeDuration: const Duration(milliseconds: 1000),
               secondaryBackground: Container(
-                color: Colors.grey[400],
+                color: Colors.red.shade100,
                 alignment: AlignmentDirectional.centerEnd,
                 child: const Padding(
                   padding: EdgeInsets.all(14.0),
@@ -88,17 +93,38 @@ class _FeedsState extends State<Feeds> {
               onDismissed: (direction) {
                 // Remove the item from the data source.
                 setState(() {
-                    FirebaseFirestore.instance
-                        .collection('createdFeeds')
-                        .doc(data.id)
-                        .delete()
-                        .then((value) => loginRegistrationClass.log.i(data.id));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.black38,
-                        content: Text('Feed Dismissed'),
+                  AlertDialog(
+                    title: const Text("Delete"),
+                    elevation: 2,
+                    backgroundColor: Colors.white,
+                    content: const Text("Do you want to delete your account permanently?"),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text("Yes", style: TextStyle(color: Colors.redAccent),),
+                        onPressed: () {
+                          loginRegistrationClass.logout(context)
+                              .then((value) =>
+                                FirebaseFirestore.instance
+                                    .collection('createdFeeds')
+                                    .doc(data.id)
+                                    .delete()
+                                    .then((value) => loginRegistrationClass.log.i(data.id),),);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.black38,
+                                content: Text('Feed Dismissed'),
+                              ),);
+                        },
                       ),
-                    );
+                      TextButton(
+                        child: const Text("No",style: TextStyle(color: Colors.redAccent)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+
                   },
                 );
               },
@@ -151,8 +177,17 @@ class _FeedsState extends State<Feeds> {
                             ),
                           ),
                           IconButton(
-                              onPressed: (){},
-                              icon: Icon(Icons.edit, color: loginRegistrationClass.iconColor(),),)
+                              onPressed: (){
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (context) => const EditFeeds(),
+                                    ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                color: loginRegistrationClass.iconColor(),
+                              ),
+                          )
                         ]
                       )
                     ],
